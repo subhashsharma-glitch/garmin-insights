@@ -63,7 +63,7 @@ export function summariseTrack(pts, { perFootCadence = true } = {}) {
   return {
     start: pts[0].t, durS: moving, distM, gainM: hasEle ? gain : null,
     avgHr: avg(hrs), maxHr: hrs.length ? Math.max(...hrs) : null,
-    cadence: cad, tempC: avg(temps), decoupling, hrCoverage,
+    cadence: cad, tempC: avg(temps), decoupling, decouplingFromTrack: decoupling != null, hrList: decoupling != null ? hrs : undefined, hrCoverage,
     lat: pts.find((p) => Number.isFinite(p.lat)) ? true : false,
   };
 }

@@ -33,7 +33,7 @@ export async function parseFit(buf, name, ds) {
     durS: session?.total_timer_time ?? s.durS, distM: session?.total_distance ?? s.distM,
     avgHr: session?.avg_heart_rate ?? s.avgHr, maxHr: session?.max_heart_rate ?? s.maxHr,
     cadence: run ? cadence : null, gainM: session?.total_ascent ?? s.gainM,
-    tempC: session?.avg_temperature ?? s.tempC, decoupling: s.decoupling ?? null,
+    tempC: session?.avg_temperature ?? s.tempC, decoupling: s.decoupling ?? null, decouplingFromTrack: s.decoupling != null, hrList: s.hrList,
   };
   ds.datedDays = true;
   ds.addActivity(a, name);

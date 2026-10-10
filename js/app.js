@@ -119,13 +119,13 @@ function render() {
   const flags = E.redFlags(ds, end, c, rhr);
   const s = E.summarise(results, flags, rhr);
   const li = (arr) => (arr.length ? `<ul>${arr.map((r) => `<li><strong>${esc(r.label)}</strong> ${pill(r.verdict)}<br><span class="note">${esc(r.text)}</span></li>`).join('')}</ul>` : '<p class="note">None right now.</p>');
-  const notRated = results.filter((r) => r.verdict === 'insufficient').map((r) => r.label);
+  const notRated = results.filter((r) => r.verdict === 'insufficient' || r.verdict === 'not_available').map((r) => r.label);
   sec('sec-summary', `${flags.flags.length ? `<div class="flag"><strong>Worth a check-up.</strong> ${flags.flags.map(esc).join(' ')} ${esc(TEXT.redFlag)}</div>` : ''}
     <p class="headline">${esc(s.headline)}</p>${s.why ? `<p>${esc(s.why)}</p>` : ''}
     <div class="cols"><div><h3>Going well</h3>${li(s.strengths)}</div><div><h3>Focus on</h3>${li(s.focus)}</div></div>
     ${s.next ? `<h3 class="mt">Next step</h3><p>${esc(s.next)}</p>` : ''}
     <p class="note">Red-flag check: ${flags.flags.length ? `${flags.flags.length} raised.` : 'nothing fired.'} ${flags.checks.map(esc).join(' · ')}</p>
-    ${notRated.length ? `<p class="note">Not rated (not enough data): ${esc(notRated.join(', '))}.</p>` : ''}
+    ${notRated.length ? `<p class="note">Not rated (not available or not enough data): ${esc(notRated.join(', '))}.</p>` : ''}
     <p class="note"><strong>If you have chest pain, fainting, palpitations or breathlessness at rest, please seek medical help now (NHS 111 / 999 in the UK, or your local emergency number).</strong></p>
     <p class="note">${esc(TEXT.disclaimer)}</p>`);
   renderFiles(ds);

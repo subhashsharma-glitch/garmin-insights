@@ -3,7 +3,7 @@ import { round } from './stats.js';
 import { fmtPace } from './coach/evaluate.js';
 
 export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const LABEL = { good: 'Good', watch: 'Watch', concern: 'Concern', insufficient: 'Not enough data', missing: 'Not found', info: 'Info' };
+const LABEL = { not_available: 'Not available', good: 'Good', watch: 'Watch', concern: 'Concern', insufficient: 'Not enough data', missing: 'Not found', info: 'Info' };
 export const pill = (v) => `<span class="pill ${v}">${LABEL[v] || esc(v)}</span>`;
 const short = (n) => String(n).split(' › ').pop().split('/').pop();
 const filesLine = (files) => { const f = [...new Set((files || []).map(short))]; return f.length ? `<div class="files-used">From: ${f.slice(0, 5).map(esc).join(', ')}${f.length > 5 ? ` and ${f.length - 5} more` : ''}</div>` : ''; };
@@ -14,7 +14,7 @@ export function missingBox(what, lookedFor, extra) {
 
 // A metric card for a coaching result.
 export function metricCard(r, lookedFor) {
-  if (r.verdict === 'insufficient' && !r.metrics.length) {
+  if ((r.verdict === 'insufficient' || r.verdict === 'not_available') && !r.metrics.length) {
     const found = r.files.length > 0;
     return `<article class="metric"><div class="metric-head"><h3>${esc(r.label)}</h3>${pill(found ? 'insufficient' : 'missing')}</div>
       ${found ? `<div class="missing"><strong>Not enough data yet.</strong> ${esc(r.missing || '')}</div>${filesLine(r.files)}` : missingBox(r.label, lookedFor, r.missing && r.key === 'vo2max' ? r.missing : '')}</article>`;

@@ -1,4 +1,4 @@
-// Thresholds from coaching-rules.md (v0.1 "Machine-readable rules"), checked against sources on 2026-10-10.
+// Thresholds from coaching-rules.md (v0.2 "Machine-readable rules"), checked against sources on 2026-10-10.
 export const RULES = {
   vo2max: { recentDays: 30, trendDays: 90, trendMinGapDays: 28, dropWatch: 2 },
   resting_hr: { minDays: 14, baselineDays: 30, valid: [25, 150], watchDelta: 3, concernDelta: 5, concernConsecutive: 3, high: 100, normalLow: 40 },

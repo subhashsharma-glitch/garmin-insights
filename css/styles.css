@@ -39,7 +39,7 @@ ol.hint{padding-left:20px}
 .metric{border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0}
 .metric-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
 .pill{display:inline-block;font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}
-.pill.good{background:var(--good-bg);color:var(--good)}.pill.watch{background:var(--watch-bg);color:var(--watch)}.pill.concern{background:var(--concern-bg);color:var(--concern)}.pill.insufficient,.pill.missing,.pill.info{background:var(--na-bg);color:var(--na)}
+.pill.good{background:var(--good-bg);color:var(--good)}.pill.watch{background:var(--watch-bg);color:var(--watch)}.pill.concern{background:var(--concern-bg);color:var(--concern)}.pill.not_available,.pill.insufficient,.pill.missing,.pill.info{background:var(--na-bg);color:var(--na)}
 .kv{display:grid;grid-template-columns:1fr auto;gap:2px 12px;margin:6px 0;font-size:.93rem}
 .kv dt{color:var(--muted);min-width:0;overflow-wrap:anywhere}
 .kv dd{margin:0;font-weight:650;text-align:right;font-variant-numeric:tabular-nums}
