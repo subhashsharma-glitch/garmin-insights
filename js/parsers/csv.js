@@ -134,7 +134,7 @@ export function parseCsvFile(text, name, ds) {
       const cadRun = num(get(r, 'avgruncadence')); const cadGen = num(get(r, 'avgcadence'));
       const gain = num(get(r, 'totalascent'));
       ds.addActivity({
-        day: dateToDay(dateStr), start: Number.isFinite(start) ? start : null, type, isRun: isRunType(type), indoor: isIndoorType(type), durS,
+        title: get(r, 'title') || '', day: dateToDay(dateStr), start: Number.isFinite(start) ? start : null, type, isRun: isRunType(type), indoor: isIndoorType(type), durS,
         distM, avgHr: num(get(r, 'avghr')), maxHr: num(get(r, 'maxhr')),
         cadence: cadRun ?? (isRunType(type) ? cadGen : null),
         gainM: gain != null ? (elevFeet ? gain * 0.3048 : gain) : null, tempC: num(get(r, 'avgtemperature', 'mintemp')),

@@ -56,3 +56,7 @@ python3 -m http.server 8765 & node browser-test.mjs    # 1440 px and 390 px; con
 ```
 
 Not medical advice. Not affiliated with Garmin.
+
+## v2: interactive report
+
+Charts use [Chart.js](https://www.chartjs.org/) 4.5.1 (MIT), vendored in `js/vendor/chart.umd.js` and served from this site, so the strict CSP is unchanged and no CDN is contacted. The Explore section (date range 30d/90d/1y/all/custom, activity-type filter, km/miles) drives the KPI tiles, charts, activity calendar and the sortable/searchable activity table. Coaching verdicts still use the latest 7–30 days. Theme follows the system and can be toggled; nothing is saved. Use "PDF / print" to save the report.

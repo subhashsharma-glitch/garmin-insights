@@ -5,63 +5,87 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<title>Garmin Fitness Insights — private, in-browser report</title>
-<meta name="description" content="Upload your Garmin export and get a plain-English fitness and recovery report. Everything runs in your browser; nothing is uploaded.">
+<meta name="color-scheme" content="light dark">
+<title>Garmin Fitness Insights: private, in-browser report</title>
+<meta name="description" content="Upload your Garmin export and get an interactive fitness, recovery and running report. Everything runs in your browser; nothing is uploaded.">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<header class="site-header">
+<svg xmlns="http://www.w3.org/2000/svg" class="sr-only" aria-hidden="true"><symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></symbol><symbol id="i-pulse" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></symbol><symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol><symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol><symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol><symbol id="i-run" viewBox="0 0 24 24"><circle cx="14" cy="4" r="2"/><path d="m6 22 3-7 3 2v5M8 10l3-3 4 3 3 1M11 7l-2 5 4 3"/></symbol><symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-6"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5M12 3v12"/></symbol><symbol id="i-printer" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol><symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></symbol><symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2M6 11v2M10 11v2"/></symbol><symbol id="i-gauge" viewBox="0 0 24 24"><path d="M12 14l4-4"/><path d="M3.3 19a10 10 0 1 1 17.4 0"/></symbol><symbol id="i-swap" viewBox="0 0 24 24"><path d="M7 7h13l-3-3M17 17H4l3 3"/></symbol><symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></symbol><symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></symbol><symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></symbol></svg>
+<a class="skip" href="#main">Skip to content</a>
+<header class="hero">
   <div class="wrap">
-    <h1>Garmin Fitness Insights</h1>
-    <p class="tagline">A plain-English read of your fitness, recovery and running, from your own Garmin files.</p>
-    <p class="privacy" id="privacy"><strong>Private by design:</strong> your files are read and analysed entirely in this browser tab. Nothing is uploaded, stored or sent anywhere: there is no server, no account, no cookies and no analytics. Close the tab and it's gone.</p>
+    <div class="topbar">
+      <a class="brand" href="#"><span class="logo"><svg class="i" aria-hidden="true"><use href="#i-pulse"/></svg></span>Fitness Insights</a>
+      <div class="tools">
+        <button type="button" class="icon-btn" id="theme" aria-pressed="false" aria-label="Switch to dark mode"><svg class="i" aria-hidden="true"><use href="#i-moon"/></svg><span class="lbl">Theme</span></button>
+        <button type="button" class="icon-btn" id="print" hidden aria-label="Print or save the report as PDF"><svg class="i" aria-hidden="true"><use href="#i-printer"/></svg><span class="lbl">PDF / print</span></button>
+      </div>
+    </div>
+    <div class="hero-grid">
+      <div>
+        <h1>Your Garmin data, <span>made clear</span>.</h1>
+        <p class="lead">Drop in your Garmin export and get an interactive read of your fitness, recovery and running, with charts across your whole history.</p>
+        <p class="privacy" id="privacy"><svg class="i" aria-hidden="true"><use href="#i-shield"/></svg><span><strong>Private by design:</strong> your files are read and analysed entirely in this browser tab. Nothing is uploaded, stored or sent anywhere: no server, no account, no cookies, no analytics. Close the tab and it's gone.</span></p>
+      </div>
+      <div class="upload" id="upload">
+        <label class="drop" id="drop" for="file">
+          <input type="file" id="file" multiple accept=".zip,.fit,.gpx,.csv,.json">
+          <span class="big-ic"><svg class="i" aria-hidden="true"><use href="#i-upload"/></svg></span>
+          <span class="drop-main">Drop files here or <u>choose files</u></span>
+          <span class="drop-sub">Garmin account-export ZIP, or .fit, .gpx, .csv, export .json</span>
+        </label>
+        <div class="progress" id="progress" hidden><div></div></div>
+        <div class="actions">
+          <button type="button" id="demo" class="btn"><svg class="i" aria-hidden="true"><use href="#i-spark"/></svg>Try with demo data</button>
+          <button type="button" id="clear" class="btn ghost" hidden>Clear</button>
+        </div>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+        <div id="upload-extra">
+        <details>
+          <summary>Your details (optional)</summary>
+          <div class="form-grid">
+            <label>Age <input type="number" id="age" min="10" max="100" inputmode="numeric" placeholder="e.g. 42"></label>
+            <label>Sex <select id="sex"><option value="">Not set</option><option value="male">Male</option><option value="female">Female</option></select></label>
+            <label>Max heart rate <input type="number" id="maxhr" min="100" max="230" inputmode="numeric" placeholder="bpm"></label>
+            <label>Distances in an Activities.csv <select id="units"><option value="auto">Detect automatically</option><option value="km">Kilometres</option><option value="mi">Miles</option></select></label>
+            <label class="check"><input type="checkbox" id="athlete"> I'm a trained endurance athlete</label>
+          </div>
+          <p class="hint">Used only in this tab, never saved. Filled in from your export's profile when present.</p>
+        </details>
+        <details>
+          <summary>How to get your Garmin export</summary>
+          <ol class="hint">
+            <li>Full history: Garmin Account Management Center → <em>Data Management</em> → <em>Export Your Data</em>. Garmin emails a ZIP; drop it here as is.</li>
+            <li>Single workouts: Garmin Connect → activity → ⚙ → <em>Export Original</em> (FIT) or <em>Export to GPX</em>.</li>
+            <li>Activity list: Garmin Connect → Activities → <em>Export CSV</em>.</li>
+          </ol>
+        </details>
+        </div>
+      </div>
+    </div>
   </div>
 </header>
 
-<main class="wrap">
-  <section class="card upload" aria-labelledby="up-h">
-    <h2 id="up-h">1. Add your files</h2>
-    <label class="drop" id="drop" for="file">
-      <input type="file" id="file" multiple accept=".zip,.fit,.gpx,.csv,.json">
-      <span class="drop-main">Drop files here or <u>choose files</u></span>
-      <span class="drop-sub">Garmin Connect account-export ZIP, or individual .fit, .gpx, .csv or export .json files</span>
-    </label>
-    <div class="actions">
-      <button type="button" id="demo" class="btn">Try with demo data</button>
-      <button type="button" id="clear" class="btn ghost" hidden>Clear</button>
-    </div>
-    <details class="details">
-      <summary>Your details (optional, improves VO2 max and effort filters)</summary>
-      <div class="form-grid">
-        <label>Age <input type="number" id="age" min="10" max="100" inputmode="numeric" placeholder="e.g. 42"></label>
-        <label>Sex <select id="sex"><option value="">Not set</option><option value="male">Male</option><option value="female">Female</option></select></label>
-        <label>Max heart rate <input type="number" id="maxhr" min="100" max="230" inputmode="numeric" placeholder="bpm"></label>
-        <label>Distance units in an Activities.csv <select id="units"><option value="auto">Detect automatically</option><option value="km">Kilometres</option><option value="mi">Miles</option></select></label>
-        <label class="check"><input type="checkbox" id="athlete"> I'm a trained endurance athlete</label>
-      </div>
-      <p class="hint">Used only in this tab, never saved. If your export contains your profile, it is filled in for you.</p>
-    </details>
-    <details class="details">
-      <summary>How to get your Garmin export</summary>
-      <ol class="hint">
-        <li>Full history: sign in at Garmin's Account Management Center → <em>Data Management</em> → <em>Export Your Data</em> → <em>Request Data Export</em>. Garmin emails a ZIP link (it can take a few days). Drop that ZIP here as is.</li>
-        <li>Single workouts: in Garmin Connect open an activity → ⚙ → <em>Export Original</em> (FIT) or <em>Export to GPX</em>.</li>
-        <li>Activity list: Garmin Connect → Activities → <em>Export CSV</em> (metric units).</li>
-      </ol>
-    </details>
-    <div id="status" class="status" role="status" aria-live="polite"></div>
-  </section>
+<nav class="tabs" id="tabs" aria-label="Report sections" hidden>
+  <div class="wrap">
+    <a href="#range">Overview</a><a href="#sec-explore">Explore</a><a href="#sec-score">Fitness</a><a href="#sec-recovery">Recovery</a><a href="#sec-load">Load</a><a href="#sec-running">Running</a><a href="#sec-change">This month</a><a href="#sec-summary">Coach</a><a href="#sec-activities">Activities</a>
+  </div>
+</nav>
 
+<main class="wrap" id="main">
   <div id="report" hidden>
-    <section class="card range" id="range"></section>
-    <section class="card" id="sec-score" aria-labelledby="h-score"><h2 id="h-score">Score card</h2><div class="body"></div></section>
-    <section class="card" id="sec-recovery" aria-labelledby="h-rec"><h2 id="h-rec">Recovery check</h2><div class="body"></div></section>
-    <section class="card" id="sec-load" aria-labelledby="h-load"><h2 id="h-load">Training load balance</h2><div class="body"></div></section>
-    <section class="card" id="sec-running" aria-labelledby="h-run"><h2 id="h-run">Running breakdown</h2><div class="body"></div></section>
-    <section class="card" id="sec-change" aria-labelledby="h-chg"><h2 id="h-chg">What changed this month</h2><div class="body"></div></section>
-    <section class="card summary" id="sec-summary" aria-labelledby="h-sum"><h2 id="h-sum">Coaching summary</h2><div class="body"></div></section>
-    <section class="card files" id="sec-files"><h2>Files read</h2><div class="body"></div></section>
+    <section class="card overview" id="range" aria-label="Overview"></section>
+    <section class="card" id="sec-explore" aria-labelledby="h-sec-explore"><div class="sec-head"><h2 id="h-sec-explore"><span class="sec-ic c1"><svg class="i" aria-hidden="true"><use href="#i-chart"/></svg></span>Explore your training</h2><button type="button" class="collapse" aria-expanded="true" aria-controls="b-sec-explore" aria-label="Collapse Explore your training"><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></button></div><div class="body" id="b-sec-explore"></div></section>
+    <section class="card" id="sec-score" aria-labelledby="h-sec-score"><div class="sec-head"><h2 id="h-sec-score"><span class="sec-ic c2"><svg class="i" aria-hidden="true"><use href="#i-heart"/></svg></span>Score card</h2><button type="button" class="collapse" aria-expanded="true" aria-controls="b-sec-score" aria-label="Collapse Score card"><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></button></div><div class="body" id="b-sec-score"></div></section>
+    <section class="card" id="sec-recovery" aria-labelledby="h-sec-recovery"><div class="sec-head"><h2 id="h-sec-recovery"><span class="sec-ic c3"><svg class="i" aria-hidden="true"><use href="#i-moon"/></svg></span>Recovery check</h2><button type="button" class="collapse" aria-expanded="true" aria-controls="b-sec-recovery" aria-label="Collapse Recovery check"><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></button></div><div class="body" id="b-sec-recovery"></div></section>
+    <section class="card" id="sec-load" aria-labelledby="h-sec-load"><div class="sec-head"><h2 id="h-sec-load"><span class="sec-ic c4"><svg class="i" aria-hidden="true"><use href="#i-gauge"/></svg></span>Training load balance</h2><button type="button" class="collapse" aria-expanded="true" aria-controls="b-sec-load" aria-label="Collapse Training load balance"><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></button></div><div class="body" id="b-sec-load"></div></section>
+    <section class="card" id="sec-running" aria-labelledby="h-sec-running"><div class="sec-head"><h2 id="h-sec-running"><span class="sec-ic c1"><svg class="i" aria-hidden="true"><use href="#i-run"/></svg></span>Running breakdown</h2><button type="button" class="collapse" aria-expanded="true" aria-controls="b-sec-running" aria-label="Collapse Running breakdown"><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></button></div><div class="body" id="b-sec-running"></div></section>
+    <section class="card" id="sec-change" aria-labelledby="h-sec-change"><div class="sec-head"><h2 id="h-sec-change"><span class="sec-ic c5"><svg class="i" aria-hidden="true"><use href="#i-swap"/></svg></span>What changed this month</h2><button type="button" class="collapse" aria-expanded="true" aria-controls="b-sec-change" aria-label="Collapse What changed this month"><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></button></div><div class="body" id="b-sec-change"></div></section>
+    <section class="card summary" id="sec-summary" aria-labelledby="h-sec-summary"><div class="sec-head"><h2 id="h-sec-summary"><span class="sec-ic c6"><svg class="i" aria-hidden="true"><use href="#i-spark"/></svg></span>Coaching summary</h2><button type="button" class="collapse" aria-expanded="true" aria-controls="b-sec-summary" aria-label="Collapse Coaching summary"><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></button></div><div class="body" id="b-sec-summary"></div></section>
+    <section class="card" id="sec-activities" aria-labelledby="h-sec-activities"><div class="sec-head"><h2 id="h-sec-activities"><span class="sec-ic c5"><svg class="i" aria-hidden="true"><use href="#i-list"/></svg></span>Activities</h2><button type="button" class="collapse" aria-expanded="true" aria-controls="b-sec-activities" aria-label="Collapse Activities"><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></button></div><div class="body" id="b-sec-activities"></div></section>
+    <section class="card files" id="sec-files" aria-labelledby="h-sec-files"><div class="sec-head"><h2 id="h-sec-files"><span class="sec-ic c3"><svg class="i" aria-hidden="true"><use href="#i-file"/></svg></span>Files read</h2><button type="button" class="collapse" aria-expanded="true" aria-controls="b-sec-files" aria-label="Collapse Files read"><svg class="i" aria-hidden="true"><use href="#i-chev"/></svg></button></div><div class="body" id="b-sec-files"></div></section>
   </div>
 </main>
 
@@ -69,11 +93,12 @@
   <div class="wrap">
     <p class="disclaimer"><strong>Not medical advice.</strong> This report is for general fitness and wellbeing information only. It is not medical advice, and it can't diagnose or rule out any condition. Wearable measurements are estimates and can be wrong. If you have symptoms, a health condition, or any concern about your heart or sleep, please talk to a qualified healthcare professional. In an emergency, call your local emergency number.</p>
     <p><strong>Not affiliated with Garmin.</strong> Garmin, Garmin Connect and Body Battery are trademarks of Garmin Ltd. or its subsidiaries. This is an independent project and is not affiliated with, endorsed by or sponsored by Garmin.</p>
-    <p>Demo data is synthetic (generated, seed 42). Thresholds and sources: <a href="coaching-rules.md">coaching rules</a>. VO2 max categories: Garmin's published table (Cooper Institute data), shipped as <a href="data/vo2max-table.json">a data file</a>. Open-source libraries: <a href="js/vendor/JSZIP-LICENSE.md">JSZip</a> (MIT) and <a href="js/vendor/FIT-FILE-PARSER-LICENSE">fit-file-parser</a> (MIT), bundled in this site. <a href="https://github.com/subhashsharma-glitch/garmin-insights">Source code</a>.</p>
+    <p>Demo data is synthetic (generated, seed 42). Thresholds and sources: <a href="coaching-rules.md">coaching rules</a>. VO2 max categories: Garmin's published table (Cooper Institute data), shipped as <a href="data/vo2max-table.json">a data file</a>. Open-source libraries bundled in this site: <a href="js/vendor/JSZIP-LICENSE.md">JSZip</a>, <a href="js/vendor/FIT-FILE-PARSER-LICENSE">fit-file-parser</a> and <a href="js/vendor/CHARTJS-LICENSE.md">Chart.js</a> (MIT). <a href="https://github.com/subhashsharma-glitch/garmin-insights">Source code</a>.</p>
   </div>
 </footer>
 <script src="js/vendor/jszip.min.js"></script>
 <script src="js/vendor/fit-parser.js"></script>
+<script src="js/vendor/chart.umd.js"></script>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>

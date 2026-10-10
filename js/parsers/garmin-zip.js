@@ -78,7 +78,7 @@ function handleActivities(recs, name, ds) {
     const run = isRunType(type);
     const cad = n(r.avgRunCadence) ?? (run && n(r.avgDoubleCadence) != null ? n(r.avgDoubleCadence) : null);
     ds.addActivity({
-      start, day: dateToDay(local ?? start), type: type || 'unknown', isRun: run, indoor: isIndoorType(type),
+      title: typeof r.name === 'string' ? r.name : '', start, day: dateToDay(local ?? start), type: type || 'unknown', isRun: run, indoor: isIndoorType(type),
       durS: durS != null ? durS / scaleMs : null, distM: distCm != null ? (scaleMs === 1000 ? distCm / 100 : distCm) : null,
       avgHr: n(r.avgHr), maxHr: n(r.maxHr), cadence: run ? (cad != null && cad < 120 ? cad * 2 : cad) : null,
       gainM: gainCm != null ? (scaleMs === 1000 ? gainCm / 100 : gainCm) : null,
