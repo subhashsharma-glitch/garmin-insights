@@ -80,7 +80,9 @@ export class Dataset {
     for (const [d, r] of this.daily) if (r[field] != null && d >= from && d <= to && (!best || d > best.day)) best = { day: d, v: r[field] };
     return best;
   }
-  runs() { return this.activities.filter((a) => a.isRun); }
+  // Runs with a plausible pace (2:00–20:00 per km) when distance and time are known; others are left out of analysis.
+  runs() { return this.activities.filter((a) => a.isRun && !(a.distM > 0 && a.durS > 0 && (a.durS / (a.distM / 1000) < 120 || a.durS / (a.distM / 1000) > 1200))); }
+  get implausibleRuns() { return this.activities.filter((a) => a.isRun).length - this.runs().length; }
 }
 
 export const isRunType = (t) => /run/i.test(t || '') && !/(cycl|bike|ride)/i.test(t || '');

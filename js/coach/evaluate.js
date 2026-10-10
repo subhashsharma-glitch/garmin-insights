@@ -262,14 +262,30 @@ export function evalAerobic(ds, end, ctx) {
 export function evalCadence(ds, end) {
   const R = RULES.cadence;
   const runs = ds.runs().filter((a) => a.day > end - R.days && a.cadence > 0);
-  const files = [...new Set(runs.flatMap((a) => [...a.sources]))];
-  if (runs.length < R.minRuns) return res('cadence', 'Cadence', { files, missing: !files.length ? null : ds.runs().length ? `Need ${R.minRuns} runs with cadence in the last 30 days; found ${runs.length}.` : null });
+  const anyCad = ds.runs().filter((a) => a.cadence > 0);
+  const files = [...new Set(anyCad.flatMap((a) => [...a.sources]))];
+  const lastCad = anyCad.length ? Math.max(...anyCad.map((a) => a.day)) : null;
+  if (runs.length < R.minRuns) return res('cadence', 'Cadence', { files, missing: !files.length ? null : ds.runs().length ? `Need ${R.minRuns} runs with cadence in the last 30 days; found ${runs.length}.${lastCad != null && lastCad <= end - R.days ? ` Your files have cadence on ${anyCad.length} older runs, the latest ${end - lastCad > 730 ? `about ${Math.round((end - lastCad) / 365)} years` : `${end - lastCad} days`} before your last activity.` : ''}` : null });
   const m = median(runs.map((a) => a.cadence));
   const verdict = m >= R.good ? 'good' : 'watch';
   return res('cadence', 'Cadence', { verdict, files, median: m, metrics: [{ label: `Median cadence (${runs.length} runs, 30 days)`, value: `${Math.round(m)} spm` }],
     text: fill(TEXT.cadence[verdict], { value: Math.round(m) }), next: TEXT.cadence.next, detail: 'There is no single ideal cadence; it rises with speed and varies with height. Never rated as a concern.' });
 }
 
+export function yearlyRunning(ds) {
+  const by = new Map();
+  for (const a of ds.runs()) {
+    if (a.day == null || ds.relativeDays) continue;
+    const y = new Date(a.day * 864e5).getUTCFullYear();
+    if (!by.has(y)) by.set(y, []); by.get(y).push(a);
+  }
+  const end = ds.endDay;
+  return [...by.entries()].sort((a, b) => b[0] - a[0]).map(([year, rs]) => {
+    const wd = rs.filter((a) => a.distM > 0 && a.durS > 0);
+    const km = wd.reduce((s, a) => s + a.distM, 0) / 1000;
+    return { year, runs: rs.length, km, pace: km ? wd.reduce((s, a) => s + a.durS, 0) / km : null, hr: median(rs.map((a) => a.avgHr).filter(Boolean)), longest: wd.length ? Math.max(...wd.map((a) => a.distM)) / 1000 : 0, partial: end != null && new Date(end * 864e5).getUTCFullYear() === year };
+  });
+}
 export function fmtPace(sPerKm) { if (!sPerKm) return '–'; const m = Math.floor(sPerKm / 60), s = Math.round(sPerKm % 60); return `${s === 60 ? m + 1 : m}:${String(s === 60 ? 0 : s).padStart(2, '0')}`; }
 export function fmtDur(s) { if (s == null) return '–'; s = Math.round(s); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60; return h ? `${h}:${String(m).padStart(2, '0')}:${String(x).padStart(2, '0')}` : `${m}:${String(x).padStart(2, '0')}`; }
 

@@ -6,7 +6,7 @@ import { esc, pill, metricCard, infoCard, missingBox, changeTable } from './rend
 import { round } from './stats.js';
 
 const $ = (s) => document.querySelector(s);
-const state = { ds: null, vo2Table: null, demo: null };
+const state = { ds: null, vo2Table: null, demo: null, files: null, isDemo: false };
 
 const LOOKED = {
   vo2max: 'VO2 max in DI-Connect-Metrics/MetricsMaxMetData_*.json, vO2MaxValue in *_summarizedActivities.json, or a vo2_max column in a CSV',
@@ -35,13 +35,17 @@ async function init() {
   drop.addEventListener('drop', (e) => e.dataTransfer.files.length && run([...e.dataTransfer.files]));
   $('#demo').addEventListener('click', () => state.demo && run(state.demo, true));
   $('#clear').addEventListener('click', () => { state.ds = null; $('#report').hidden = true; $('#clear').hidden = true; input.value = ''; status('Cleared. Nothing was saved.'); });
+  $('#units').addEventListener('change', () => state.files && run(state.files, state.isDemo));
   ['#age', '#sex', '#maxhr', '#athlete'].forEach((s) => $(s).addEventListener('change', () => state.ds && render()));
 }
 
 async function run(files, demo = false) {
   status('Reading files in your browser…');
   try {
-    state.ds = await parseFiles(files, (m) => status(m));
+    const t0 = performance.now();
+    state.files = files; state.isDemo = demo;
+    state.ds = await parseFiles(files, (m) => status(m), { units: $('#units').value });
+    state.ds.parseMs = performance.now() - t0;
     state.ds.isDemo = demo;
     const p = state.ds.profile;
     if (p.ageFromFile != null && !$('#age').value) $('#age').value = p.ageFromFile;
@@ -75,6 +79,9 @@ function render() {
   $('#range').innerHTML = end == null
     ? `<strong>No usable data found.</strong> Each section below shows what it looked for.`
     : `${ds.isDemo ? '<strong>Demo data (synthetic, 90 days).</strong> ' : ''}Data range: <strong>${esc(fmtDay(Math.min(...days.concat(ds.activities.map((a) => a.day).filter((x) => x != null)))))} – ${esc(fmtDay(end))}</strong> · ${days.length} day(s) of daily data · ${ds.activities.length} activit${ds.activities.length === 1 ? 'y' : 'ies'} (${runs.length} run${runs.length === 1 ? '' : 's'}). "This week" means the 7 days ending ${esc(fmtDay(end))}.`
+      + (ds.datedDays && (Date.now() / 864e5 - end) > 14 ? `<p class="warn">Your data ends on ${esc(fmtDay(end))}, so "this week" and "this month" refer to the weeks before that date, not to today.</p>` : '')
+      + (ds.csvUnits ? `<p>Activities CSV distances read as <strong>${ds.csvUnits.unit === 'mi' ? 'miles' : 'kilometres'}</strong> (${ds.csvUnits.auto ? 'detected from pace and stride data; change it under "Your details" if wrong' : 'your choice'}). Results are shown in km.</p>` : '')
+      + (ds.implausibleRuns ? `<p class="warn">${ds.implausibleRuns} run(s) with an impossible pace (faster than 2:00 or slower than 20:00 per km) were left out.</p>` : '')
       + ds.warnings.map((w) => `<p class="warn">${esc(w)}</p>`).join('');
 
   if (end == null) {
@@ -107,7 +114,9 @@ function render() {
   const pbHtml = pb
     ? infoCard(pb.source === 'garmin' ? 'Personal bests (Garmin records)' : 'Personal bests', `<dl class="kv">${pb.items.map((i) => `<dt>${esc(i.label)}${i.day != null ? ` <span class="note">· ${esc(fmtDay(i.day))}</span>` : ''}${i.note ? `<br><span class="note">${esc(i.note)}</span>` : ''}</dt><dd>${esc(i.value)}</dd>`).join('')}</dl>${pb.source === 'activities' ? '<p class="note">Worked out from whole runs in your files (not best splits inside longer runs). Distances with no matching run are left out.</p>' : ''}`, pb.files)
     : `<article class="metric"><div class="metric-head"><h3>Personal bests</h3>${pill('missing')}</div>${missingBox('', '*_personalRecord.json or runs in your activity files')}</article>`;
-  sec('sec-running', `<div class="grid three">${metricCard(aero, LOOKED.aerobic)}${metricCard(cad, LOOKED.cadence)}${pbHtml}</div>`);
+  const yr = E.yearlyRunning(ds);
+  const yrHtml = yr.length >= 2 ? `<h3 class="mt">Running by year</h3><div class="table-wrap"><table><thead><tr><th>Year</th><th class="num">Runs</th><th class="num">Distance</th><th class="num">Avg pace</th><th class="num">Median HR</th><th class="num">Longest</th></tr></thead><tbody>${yr.map((y) => `<tr><td>${y.year}${y.partial ? ' <span class="note">(to date)</span>' : ''}</td><td class="num">${y.runs}</td><td class="num">${Math.round(y.km).toLocaleString('en-GB')} km</td><td class="num">${y.pace ? E.fmtPace(y.pace) + ' /km' : '–'}</td><td class="num">${y.hr ? Math.round(y.hr) : '–'}</td><td class="num">${round(y.longest, 1)} km</td></tr>`).join('')}</tbody></table></div><p class="note">Average pace = total time ÷ total distance for runs with both.</p>` : '';
+  sec('sec-running', `<div class="grid three">${metricCard(aero, LOOKED.aerobic)}${metricCard(cad, LOOKED.cadence)}${pbHtml}</div>${yrHtml}`);
 
   // 5. Month change
   const mc = E.monthChange(ds, end);
@@ -121,7 +130,7 @@ function render() {
   const li = (arr) => (arr.length ? `<ul>${arr.map((r) => `<li><strong>${esc(r.label)}</strong> ${pill(r.verdict)}<br><span class="note">${esc(r.text)}</span></li>`).join('')}</ul>` : '<p class="note">None right now.</p>');
   const notRated = results.filter((r) => r.verdict === 'insufficient' || r.verdict === 'not_available').map((r) => r.label);
   sec('sec-summary', `${flags.flags.length ? `<div class="flag"><strong>Worth a check-up.</strong> ${flags.flags.map(esc).join(' ')} ${esc(TEXT.redFlag)}</div>` : ''}
-    <p class="headline">${esc(s.headline)}</p>${s.why ? `<p>${esc(s.why)}</p>` : ''}
+    <p class="headline">${esc(s.headline)}</p>${s.why ? `<p>${esc(s.why)}</p>` : ''}${!s.counts.rated && ds.activities.length && !ds.days.length ? '<p>Your files contain workouts only. For resting heart rate, sleep, HRV, Body Battery and training load, add the full Garmin account-export ZIP. The running history above is still worked out from your workouts.</p>' : ''}
     <div class="cols"><div><h3>Going well</h3>${li(s.strengths)}</div><div><h3>Focus on</h3>${li(s.focus)}</div></div>
     ${s.next ? `<h3 class="mt">Next step</h3><p>${esc(s.next)}</p>` : ''}
     <p class="note">Red-flag check: ${flags.flags.length ? `${flags.flags.length} raised.` : 'nothing fired.'} ${flags.checks.map(esc).join(' · ')}</p>

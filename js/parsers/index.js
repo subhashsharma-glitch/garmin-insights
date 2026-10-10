@@ -9,8 +9,9 @@ const readText = (f) => (f.text ? f.text() : new Response(f).text());
 const readBuf = (f) => (f.arrayBuffer ? f.arrayBuffer() : new Response(f).arrayBuffer());
 
 // files: File objects or {name, text} objects (demo data)
-export async function parseFiles(files, log = () => {}) {
+export async function parseFiles(files, log = () => {}, opts = {}) {
   const ds = new Dataset();
+  ds.unitPref = opts.units || 'auto';
   for (const f of files) {
     const name = f.name; const lower = name.toLowerCase();
     log(`Reading ${name}…`);

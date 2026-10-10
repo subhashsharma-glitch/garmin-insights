@@ -23,12 +23,13 @@ export function parseCsvText(text) {
 
 const num = (v) => {
   if (v === undefined || v === null) return null;
-  const s = String(v).replace(/,/g, '').trim();
-  if (s === '' || s === '--' || s.toLowerCase() === 'nan') return null;
+  // Strip thousands separators and the leading apostrophe spreadsheets add to negative numbers ("'-6").
+  const s = String(v).replace(/,/g, '').replace(/^'/, '').trim();
+  if (s === '' || /^-+(:-+)*$/.test(s) || s.toLowerCase() === 'nan') return null;
   const n = Number(s); return Number.isFinite(n) ? n : null;
 };
 const hms = (v) => { // "01:02:03", "45:10", "45:10.3"
-  if (!v || v === '--') return null;
+  if (!v || /^[-:]+$/.test(v)) return null;
   const p = String(v).split(':').map(Number); if (p.some((x) => !Number.isFinite(x))) return null;
   return p.reduce((s, x) => s * 60 + x, 0);
 };
@@ -89,25 +90,58 @@ export function parseCsvFile(text, name, ds) {
     return { kind: 'Activities CSV (sample format)', rows: n };
   }
 
-  // 3) Garmin Connect "Activities.csv" (Export CSV from the activities list). Assumes metric units.
+  // 3) Garmin Connect "Activities.csv" (Export CSV from the activities list).
+  // Units follow the account settings and are not labelled, so they are inferred:
+  //  - "Avg Pace" (min per unit) with the time gives each row's distance in pace units. A row whose distance is
+  //    ~1000x or ~1609x that is in metres (Garmin exports track runs and pool swims in metres).
+  //  - steps x stride length (metres) per unit of distance: ~1609 = miles, ~1000 = km.
+  //  The user can override with the "Distance units" option.
   if (has('activitytype') && has('date') && has('time', 'movingtime')) {
-    let n = 0;
-    for (const r of records) {
+    const rows = records.map((r) => {
       const type = get(r, 'activitytype') || '';
+      const durS = hms(get(r, 'movingtime')) || hms(get(r, 'time'));
+      const elapsed = hms(get(r, 'time')) || durS;
+      const pace = /:/.test(get(r, 'avgpace') || '') ? hms(get(r, 'avgpace')) : null;
+      const dist = num(get(r, 'distance'));
+      let ratio = null; if (pace && dist && elapsed) ratio = dist / (elapsed / pace);
+      const metresRow = ratio != null && ratio > 300;
+      return { r, type, durS, pace, dist, ratio, metresRow };
+    });
+    const votes = { mi: 0, km: 0 };
+    for (const x of rows) {
+      if (x.metresRow) { if (Math.abs(x.ratio / 1609.34 - 1) < 0.12) votes.mi += 3; else if (Math.abs(x.ratio / 1000 - 1) < 0.12) votes.km += 3; }
+      const steps = num(get(x.r, 'steps')), stride = num(get(x.r, 'avgstridelength'));
+      if (!x.metresRow && steps && stride && stride < 2.5 && x.dist > 0.5 && isRunType(x.type)) {
+        const m = (steps * stride) / x.dist; if (Math.abs(m / 1609.34 - 1) < 0.15) votes.mi++; else if (Math.abs(m / 1000 - 1) < 0.15) votes.km++;
+      }
+    }
+    const pref = ds.unitPref && ds.unitPref !== 'auto' ? ds.unitPref : null;
+    const unit = pref || (votes.mi > votes.km ? 'mi' : 'km');
+    const unitM = unit === 'mi' ? 1609.344 : 1000;
+    // Stride over ~2.5 means feet, i.e. full imperial settings; then elevation is in feet too.
+    const strides = rows.map((x) => num(get(x.r, 'avgstridelength'))).filter((v) => v > 0);
+    const elevFeet = unit === 'mi' && strides.length && strides.sort((a, b) => a - b)[Math.floor(strides.length / 2)] > 2.5;
+    let n = 0, metresRows = 0;
+    for (const x of rows) {
+      const { r, type, durS } = x;
       const dateStr = get(r, 'date');
       const start = dateStr ? Date.parse(dateStr.replace(' ', 'T')) : null;
       ds.datedDays = true;
-      const durS = hms(get(r, 'movingtime')) || hms(get(r, 'time'));
+      const swim = /swim/i.test(type);
+      let distM = null;
+      if (x.dist != null) distM = x.metresRow || swim ? (swim ? null : x.dist) : x.dist * unitM;
+      if (x.metresRow) metresRows++;
       const cadRun = num(get(r, 'avgruncadence')); const cadGen = num(get(r, 'avgcadence'));
+      const gain = num(get(r, 'totalascent'));
       ds.addActivity({
         day: dateToDay(dateStr), start: Number.isFinite(start) ? start : null, type, isRun: isRunType(type), indoor: isIndoorType(type), durS,
-        distM: num(get(r, 'distance')) != null ? num(get(r, 'distance')) * 1000 : null,
-        avgHr: num(get(r, 'avghr')), maxHr: num(get(r, 'maxhr')),
+        distM, avgHr: num(get(r, 'avghr')), maxHr: num(get(r, 'maxhr')),
         cadence: cadRun ?? (isRunType(type) ? cadGen : null),
-        gainM: num(get(r, 'totalascent')), tempC: num(get(r, 'avgtemperature', 'mintemp')),
+        gainM: gain != null ? (elevFeet ? gain * 0.3048 : gain) : null, tempC: num(get(r, 'avgtemperature', 'mintemp')),
       }, name); n++;
     }
-    return { kind: 'Garmin Connect activities CSV (metric units assumed)', rows: n };
+    ds.csvUnits = { unit, auto: !pref, votes, metresRows, elevFeet };
+    return { kind: `Garmin Connect activities CSV (distances in ${unit === 'mi' ? 'miles' : 'km'}${pref ? ', set by you' : ', detected'}${metresRows ? `; ${metresRows} track/metre rows` : ''}; swim distances ignored)`, rows: n };
   }
   return { kind: 'CSV', rows: 0, skipped: 'Unrecognised CSV columns' };
 }
