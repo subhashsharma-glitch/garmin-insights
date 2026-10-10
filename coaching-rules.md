@@ -79,7 +79,7 @@ Conventions
 
 ## 6. Training load
 - **Fields:** daily `acute_load` (Garmin 7-day weighted EPOC load), `chronic_load`, `training_status`, `acwr_status`, `load_focus` (low aerobic / high aerobic / anaerobic, with shortage/balanced/excess).
-- **Parsing:** Garmin `training_status` values carry a numeric suffix (e.g. `MAINTAINING_2`, `OVERREACHING_5`); match on the **prefix** before the underscore. Compute `load_ratio = acute_load / chronic_load` yourself, or use Garmin's `acwr_status`. Never treat `acwr_percent` as a ratio (seen: `acwr_percent 38` alongside ratio 0.92).
+- **Parsing:** Garmin `training_status` values carry a numeric suffix (e.g. `MAINTAINING_2`, `OVERREACHING_5`); match on the **prefix** before the underscore. Compute `load_ratio = acute_load / chronic_load` yourself, or use Garmin's `acwr_status`. Never treat `acwr_percent` as a ratio (illustrative example: a source could report `acwr_percent: 25` while acute 300 ÷ chronic 400 = 0.75; use the 0.75).
 - **Minimum data:** 28 days for chronic load / ratio; Garmin needs ~4 weeks to give load focus **[Garmin]**.
 - **Ranges:** Garmin colours the acute-load ratio and status itself — prefer that. If computing, use acute:chronic workload ratio 0.8–1.3 as "sweet spot", >1.5 as "danger zone" (Gabbett, BJSM 2016) **[heuristic — research contested]**.
 - **Look-back:** today's value is not enough. Also check the last 14 days of status and the last 28 days of chronic load.
