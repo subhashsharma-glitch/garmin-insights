@@ -1,0 +1,14 @@
+import fs from 'fs';
+import { Dataset } from '../js/model.js';
+import { parseCsvFile } from '../js/parsers/csv.js';
+import * as E from '../js/coach/evaluate.js';
+const ds = new Dataset();
+for (const f of ['daily.csv', 'activities.csv']) console.log(parseCsvFile(fs.readFileSync('demo/' + f, 'utf8'), f, ds));
+const end = ds.endDay; const ctx = { vo2Table: JSON.parse(fs.readFileSync('data/vo2max-table.json')) };
+const rhr = E.evalRhr(ds, end);
+const R = [E.evalVo2(ds, end, ctx), rhr, E.evalHrv(ds, end), E.evalSleep(ds, end), E.evalBodyBattery(ds, end), E.evalLoad(ds, end), E.evalAerobic(ds, end, ctx), E.evalCadence(ds, end)];
+for (const r of R) console.log(r.key.padEnd(14), r.verdict.padEnd(12), r.metrics.map((m) => `${m.label}=${m.value}`).join('; '), r.missing || '', '\n   ', r.text);
+const f = E.redFlags(ds, end, ctx, rhr); console.log(f);
+console.log(E.summarise(R, f, rhr));
+console.log(E.monthChange(ds, end).rows.map((r) => `${r.label}: ${r.before?.toFixed(2)} -> ${r.now?.toFixed(2)}`));
+console.log(E.personalBests(ds));

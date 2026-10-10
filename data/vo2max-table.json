@@ -1,0 +1,10 @@
+{
+  "source": "Garmin owner's manuals, appendix 'VO2 Max. Standard Ratings' (data reprinted by Garmin with permission from The Cooper Institute)",
+  "sourceUrl": "https://www8.garmin.com/manuals/webhelp/GUID-25EFCCBC-D0EB-4E1B-AE9F-B4B900891C20/EN-US/GUID-1FBCCD9E-19E1-4E4C-BD60-1793B5B97EB3.html",
+  "checked": "2026-10-10",
+  "units": "ml/kg/min",
+  "note": "Each value is the lower bound of the category. Below the Fair bound is Poor. Ages outside 20-79 are not covered by the table.",
+  "ageBands": [[20,29],[30,39],[40,49],[50,59],[60,69],[70,79]],
+  "male":   { "superior": [55.4,54.0,52.5,48.9,45.7,42.1], "excellent": [51.1,48.3,46.4,43.4,39.5,36.7], "good": [45.4,44.0,42.4,39.2,35.5,32.3], "fair": [41.7,40.5,38.5,35.6,32.3,29.4] },
+  "female": { "superior": [49.6,47.4,45.3,41.1,37.8,36.7], "excellent": [43.9,42.4,39.7,36.7,33.0,30.9], "good": [39.5,37.8,36.3,33.0,30.0,28.1], "fair": [36.1,34.4,33.0,30.1,27.5,25.9] }
+}

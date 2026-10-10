@@ -1,0 +1,1 @@
+{ "private": true, "type": "module", "description": "Dev-only test tooling (not used by the site)", "devDependencies": { "@garmin/fitsdk": "^21.0.0", "jszip": "^3.10.2", "puppeteer-core": "^24.0.0" } }
