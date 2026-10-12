@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://subhashsharma-glitch.github.io/garmin-insights/sitemap.xml
